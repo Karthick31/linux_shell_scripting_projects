@@ -8,7 +8,7 @@ echo "Parameter 2: ${2}"
 echo "Parameter 3: ${3}"
 echo 
 
-# Loop through all the positional parameters.
+# Loop through all the positional parameter.
 while [[ "${#}" -gt 0 ]]
 do 
  echo "Number of parameters: ${#}"
