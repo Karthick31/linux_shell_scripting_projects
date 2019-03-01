@@ -1,0 +1,39 @@
+send "exit\r"
+######################################################################################
+
+spawn ssh -q -o StrictHostKeyChecking=no $sourcehost
+
+expect {
+       timeout { send_user "\nFailed to log into the server\n"; exit 1 }
+       eof { send_user "\nSSH failure for $sourcehost\n"; exit 1 }
+       -re $prompt {send_user "\nLogged into the Source server to revert the permit the root login changes\n\r" }
+}
+
+send "\r"
+
+
+send "sudo /bin/cat /etc/SuSE-release |grep VERSION\r"
+
+expect {
+  default { send_user "\nFailed to determine Operating system version\n"; exit 1 }
+  "*11" {
+  send "sudo sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' $file\r"
+  expect -re $prompt
+  send "sudo /sbin/service sshd restart\r"
+  expect -re $prompt
+  send "sudo /bin/cat $file |grep -i PermitRootLogin\r"
+  expect -re $prompt
+  send_user "\nConfig file updated\n\r"
+  }
+  "*12" {
+  send "sudo sed -i 's/PermitRootLogin=yes/PermitRootLogin=no/g' $file1\r"
+  expect -re $prompt
+  send "sudo systemctl restart sshd.service\r"
+  expect -re $prompt
+  send "sudo systemctl status sshd.service\r"
+  expect -re $prompt  
+  send_user "\nConfig file updated\n\r"
+
+  }
+}
+send "exit\r"
