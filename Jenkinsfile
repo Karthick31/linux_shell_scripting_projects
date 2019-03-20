@@ -14,7 +14,7 @@ pipeline {
 
    steps {
 
-    echo "Pipeline triggered by ${params.USER}"
+    echo "This Pipeline triggered by ${params.USER}"
 
    }
 
